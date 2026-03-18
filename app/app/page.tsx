@@ -12,7 +12,7 @@ interface AndroidWindow extends Window {
 
 import { usePaisaData, useJoinHousehold } from "@/hooks/use-paisa-data"
 import { Onboarding } from "@/components/paisa/onboarding"
-import { Dashboard } from "@/components/paisa/dashboard-db"
+import { DashboardDb } from "@/components/paisa/dashboard-db"
 import { Spinner } from "@/components/ui/spinner"
 import type { OnboardingData } from "@/lib/paisa-types"
 
@@ -131,7 +131,7 @@ export default function AppPage() {
 
   return (
     <main className="max-w-[520px] mx-auto">
-      <Dashboard
+      <DashboardDb
         profile={profile}
         household={household}
         settings={settings}
@@ -140,6 +140,7 @@ export default function AppPage() {
         goals={goals}
         investments={investments}
         detectedExpenses={detectedExpenses}
+        incomeHistory={incomeHistory}
         householdMembers={householdMembers}
         onUpdateSettings={updateSettings}
         onUpdateCategory={updateCategory}
@@ -156,7 +157,6 @@ export default function AppPage() {
         onIgnoreDetectedExpense={ignoreDetectedExpense}
         onDeleteDetectedExpense={deleteDetectedExpense}
         onClearAllDetectedExpenses={clearAllDetectedExpenses}
-        incomeHistory={incomeHistory}
         onAddIncomeEntry={addIncomeEntry}
         onUpdateIncomeEntry={updateIncomeEntry}
         onDeleteIncomeEntry={deleteIncomeEntry}

@@ -1,5 +1,5 @@
-import { createClient } from "@supabase/supabase-js"
 import { createClient as createServerClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { NextResponse } from "next/server"
 
 export async function POST() {
@@ -14,29 +14,32 @@ export async function POST() {
 
     const userId = user.id
 
-    // Delete user's expenses first
-    await supabase
+    // Use admin client to bypass RLS when deleting user data
+    const supabaseAdmin = createAdminClient()
+
+    // Delete user's detected expenses
+    await supabaseAdmin
+      .from("detected_expenses")
+      .delete()
+      .eq("user_id", userId)
+
+    // Delete user's income history
+    await supabaseAdmin
+      .from("income_history")
+      .delete()
+      .eq("user_id", userId)
+
+    // Delete user's expenses
+    await supabaseAdmin
       .from("expenses")
       .delete()
       .eq("user_id", userId)
 
     // Clear profile data
-    await supabase
+    await supabaseAdmin
       .from("profiles")
       .delete()
       .eq("id", userId)
-
-    // Create admin client to delete the auth user
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    )
 
     // Delete the auth user
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId)
