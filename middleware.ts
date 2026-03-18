@@ -2,19 +2,19 @@ import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
-
-  // Check if Supabase env vars are available
+  // Check if Supabase env vars are available before doing anything
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+  // If env vars are not set, allow the request to continue without auth
+  // This prevents the app from crashing during initial setup
   if (!supabaseUrl || !supabaseAnonKey) {
-    // If env vars are not set, allow the request to continue
-    // This prevents the app from crashing during initial setup
-    return supabaseResponse
+    return NextResponse.next({ request })
   }
+
+  let supabaseResponse = NextResponse.next({
+    request,
+  })
 
   const supabase = createServerClient(
     supabaseUrl,
